@@ -48,4 +48,8 @@ public:
 	afx_msg void OnEnChangeEdit3();
 	afx_msg void OnBnClickedCloseButton9();
 	afx_msg void OnBnClickedCloseButton8();
+	afx_msg void OnBnClickedButton3();
+	afx_msg void OnBnClickedButton4();
+	afx_msg void OnBnClickedButton5();
+	afx_msg void OnBnClickedButton6();
 };

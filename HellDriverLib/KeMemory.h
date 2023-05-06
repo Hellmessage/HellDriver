@@ -11,7 +11,12 @@ extern "C" {
 
     HELLCALL UINT32 KeProcessMemoryRead(UINT32 pid, UINT64 address, PVOID buffer, UINT32 length);
     HELLCALL UINT32 KeProcessMemoryMDLRead(UINT32 pid, UINT64 address, PVOID buffer, UINT32 length);
+    HELLCALL UINT32 KeProcessMemoryCR3Read(UINT32 pid, UINT64 address, PVOID buffer, UINT32 length);
+
     HELLCALL UINT32 KeProcessMemoryWrite(UINT32 pid, UINT64 address, PVOID buffer, UINT32 length);
+    HELLCALL UINT32 KeProcessOnlyReadMemoryWrite(UINT32 pid, UINT64 address, PVOID buffer, UINT32 length);
+    HELLCALL UINT32 KeProcessOnlyReadMemoryCR0Write(UINT32 pid, UINT64 address, PVOID buffer, UINT32 length);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

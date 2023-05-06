@@ -13,25 +13,24 @@
 
 #define HCODE(code)                     CTL_CODE(FILE_DEVICE_UNKNOWN, code, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
-#define CODE_WRITE                  HCODE(0x803)
-#define CODE_READ                   HCODE(0x804)
-#define CODE_READ_WRITE             HCODE(0x805)
+#define IO_CODE_WRITE                                       HCODE(0x803)
+#define IO_CODE_READ                                        HCODE(0x804)
+#define IO_CODE_READ_WRITE                                  HCODE(0x805)
 
 #pragma region 进程保护
-
-#define CODE_LOAD_SSDTHOOK          HCODE(0x806)
-#define CODE_UNLOAD_SSDTHOOK        HCODE(0x807)
-#define CODE_IN_SSDT_PROTECT        HCODE(0x808)
-#define CODE_UN_SSDT_PROTECT        HCODE(0x809)
-
+#define IO_CODE_LOAD_SSDTHOOK                               HCODE(0x806)
+#define IO_CODE_UNLOAD_SSDTHOOK                             HCODE(0x807)
+#define IO_CODE_IN_SSDT_PROTECT                             HCODE(0x808)
+#define IO_CODE_UN_SSDT_PROTECT                             HCODE(0x809)
 #pragma endregion
 
 #pragma region 过进程保护读写
-
-#define CODE_KE_READ_MEMORY         HCODE(0x80A)
-#define CODE_KE_READ_MEMORY_MDL     HCODE(0x80B)
-#define CODE_KE_WRITE_MEMORY        HCODE(0x80C)
-
+#define IO_CODE_KE_MEMORY_READ                              HCODE(0x810)
+#define IO_CODE_KE_MEMORY_MDL_READ                          HCODE(0x811)
+#define IO_CODE_KE_MEMORY_CR3_READ                          HCODE(0x812)
+#define IO_CODE_KE_MEMORY_WRITE                             HCODE(0x813)
+#define IO_CODE_KE_MEMORY_WRITE_ONLYREAD                    HCODE(0x814)
+#define IO_CODE_KE_MEMORY_WRITE_ONLYREAD_CR0                HCODE(0x815)
 #pragma endregion
 
 

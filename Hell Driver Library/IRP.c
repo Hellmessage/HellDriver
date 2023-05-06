@@ -4,10 +4,14 @@
 
 void InSSDTProtect(PIRP pirp, PIO_STACK_LOCATION stack);
 void UnSSDTProtect(PIRP pirp, PIO_STACK_LOCATION stack);
+
 UINT32 KEProcessMemoryRead(PIRP pirp, PIO_STACK_LOCATION stack);
 UINT32 KEProcessMemoryMDLRead(PIRP pirp, PIO_STACK_LOCATION stack);
-UINT32 KEProcessMemoryMDLWrite(PIRP pirp, PIO_STACK_LOCATION stack);
+UINT32 KEProcessMemoryCR3Read(PIRP pirp, PIO_STACK_LOCATION stack);
 
+UINT32 KEProcessMemoryMDLWrite(PIRP pirp, PIO_STACK_LOCATION stack);
+UINT32 KEProcessOnlyReadMemoryMDLWrite(PIRP pirp, PIO_STACK_LOCATION stack);
+UINT32 KEProcessOnlyReadMemoryCR0Write(PIRP pirp, PIO_STACK_LOCATION stack);
 
 NTSTATUS IRPHandle(PDEVICE_OBJECT pDevice, PIRP pirp) {
     HELL_PARAMS(pDevice);
@@ -49,26 +53,35 @@ NTSTATUS IRPIoControl(PDEVICE_OBJECT pDevice, PIRP pirp) {
     pirp->IoStatus.Information = 4;
 
     switch (code) {
-        case CODE_LOAD_SSDTHOOK:
+        case IO_CODE_LOAD_SSDTHOOK:
             LoadSSDTHook();
             break;
-        case CODE_UNLOAD_SSDTHOOK:
+        case IO_CODE_UNLOAD_SSDTHOOK:
             UnloadSSDTHook();
             break;
-        case CODE_IN_SSDT_PROTECT:
+        case IO_CODE_IN_SSDT_PROTECT:
             InSSDTProtect(pirp, stack);
             break;
-        case CODE_UN_SSDT_PROTECT:
+        case IO_CODE_UN_SSDT_PROTECT:
             UnSSDTProtect(pirp, stack);
             break;
-        case CODE_KE_READ_MEMORY:
+        case IO_CODE_KE_MEMORY_READ:
             pirp->IoStatus.Information = KEProcessMemoryRead(pirp, stack);
             break;
-        case CODE_KE_READ_MEMORY_MDL:
+        case IO_CODE_KE_MEMORY_MDL_READ:
             pirp->IoStatus.Information = KEProcessMemoryMDLRead(pirp, stack);
             break;
-        case CODE_KE_WRITE_MEMORY:
-
+        case IO_CODE_KE_MEMORY_CR3_READ:
+            pirp->IoStatus.Information = KEProcessMemoryCR3Read(pirp, stack);
+            break;
+        case IO_CODE_KE_MEMORY_WRITE:
+            pirp->IoStatus.Information = KEProcessMemoryMDLWrite(pirp, stack);
+            break;
+        case IO_CODE_KE_MEMORY_WRITE_ONLYREAD:
+            pirp->IoStatus.Information = KEProcessOnlyReadMemoryMDLWrite(pirp, stack);
+            break;
+        case IO_CODE_KE_MEMORY_WRITE_ONLYREAD_CR0:
+            pirp->IoStatus.Information = KEProcessOnlyReadMemoryCR0Write(pirp, stack);
             break;
         default:
             break;
@@ -78,10 +91,12 @@ NTSTATUS IRPIoControl(PDEVICE_OBJECT pDevice, PIRP pirp) {
     return STATUS_SUCCESS;
 }
 
+#pragma region 内存保护相关
+
 void InSSDTProtect(PIRP pirp, PIO_STACK_LOCATION stack) {
     HELL_PARAMS(pirp);
     HELL_PARAMS(stack);
-    
+
     ULONG length = sizeof(ProtectProcessItem);
     PProtectProcessItem temp = (PProtectProcessItem)ExAllocatePool2(POOL_FLAG_NON_PAGED, length, 'temp');
     if (temp != NULL) {
@@ -106,6 +121,10 @@ void UnSSDTProtect(PIRP pirp, PIO_STACK_LOCATION stack) {
     }
 }
 
+#pragma endregion
+
+#pragma region 内存读写
+
 UINT32 KEProcessMemoryRead(PIRP pirp, PIO_STACK_LOCATION stack) {
     HELL_PARAMS(pirp);
     HELL_PARAMS(stack);
@@ -120,7 +139,7 @@ UINT32 KEProcessMemoryRead(PIRP pirp, PIO_STACK_LOCATION stack) {
             ExFreePoolWithTag(opt, 'opt');
             pirp->IoStatus.Status = STATUS_UNSUCCESSFUL;
         } else {
-            NTSTATUS status = KReadProcessMemoryByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, opt->Length, buffer);
+            NTSTATUS status = KReadProcessMemoryByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, buffer, opt->Length);
             pirp->IoStatus.Status = status;
             if (status == STATUS_SUCCESS) {
                 RtlCopyMemory(pirp->AssociatedIrp.SystemBuffer, buffer, opt->Length);
@@ -147,7 +166,7 @@ UINT32 KEProcessMemoryMDLRead(PIRP pirp, PIO_STACK_LOCATION stack) {
     if (opt != NULL && MmIsAddressValid(opt)) {
         RtlZeroMemory(opt, length);
         RtlCopyMemory(opt, pirp->AssociatedIrp.SystemBuffer, length);
-        NTSTATUS status = KReadProcessMemoryByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, opt->Length, opt->UserBuffer);
+        NTSTATUS status = KReadProcessMemoryMDLByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, opt->UserBuffer, opt->Length);
         pirp->IoStatus.Status = status;
         if (status == STATUS_SUCCESS) {
             readLen = opt->Length;
@@ -155,6 +174,38 @@ UINT32 KEProcessMemoryMDLRead(PIRP pirp, PIO_STACK_LOCATION stack) {
             RtlInitUnicodeString(&str, (PCWSTR)opt->UserBuffer);
             HLog("读出数据: %wZ", str);
             ExFreePoolWithTag(opt, 'opt');
+        }
+    } else {
+        pirp->IoStatus.Status = STATUS_UNSUCCESSFUL;
+    }
+    return readLen;
+}
+
+UINT32 KEProcessMemoryCR3Read(PIRP pirp, PIO_STACK_LOCATION stack) {
+    HELL_PARAMS(pirp);
+    HELL_PARAMS(stack);
+    UINT32 readLen = 0;
+    ULONG length = sizeof(ProcessMemoryOpt);
+    PProcessMemoryOpt opt = (PProcessMemoryOpt)ExAllocatePool2(POOL_FLAG_NON_PAGED, length, 'opt');
+    if (opt != NULL && MmIsAddressValid(opt)) {
+        RtlZeroMemory(opt, length);
+        RtlCopyMemory(opt, pirp->AssociatedIrp.SystemBuffer, length);
+        PVOID buffer = ExAllocatePool2(POOL_FLAG_NON_PAGED, opt->Length, 'buf');
+        if (buffer == NULL) {
+            ExFreePoolWithTag(opt, 'opt');
+            pirp->IoStatus.Status = STATUS_UNSUCCESSFUL;
+        } else {
+            NTSTATUS status = KReadProcessMemoryCR3ByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, buffer, opt->Length);
+            pirp->IoStatus.Status = status;
+            if (status == STATUS_SUCCESS) {
+                RtlCopyMemory(pirp->AssociatedIrp.SystemBuffer, buffer, opt->Length);
+                readLen = opt->Length;
+                UNICODE_STRING str;
+                RtlInitUnicodeString(&str, (PCWSTR)buffer);
+                HLog("读出数据CR3: %wZ", str);
+                ExFreePoolWithTag(buffer, 'buf');
+                ExFreePoolWithTag(opt, 'opt');
+            }
         }
     } else {
         pirp->IoStatus.Status = STATUS_UNSUCCESSFUL;
@@ -171,7 +222,7 @@ UINT32 KEProcessMemoryMDLWrite(PIRP pirp, PIO_STACK_LOCATION stack) {
     if (opt != NULL && MmIsAddressValid(opt)) {
         RtlZeroMemory(opt, length);
         RtlCopyMemory(opt, pirp->AssociatedIrp.SystemBuffer, length);
-        NTSTATUS status = KWriteProcessMemoryByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, opt->Length, opt->UserBuffer);
+        NTSTATUS status = KWriteProcessMemoryByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, opt->UserBuffer, opt->Length);
         pirp->IoStatus.Status = status;
         if (status == STATUS_SUCCESS) {
             readLen = opt->Length;
@@ -183,3 +234,52 @@ UINT32 KEProcessMemoryMDLWrite(PIRP pirp, PIO_STACK_LOCATION stack) {
     }
     return readLen;
 }
+
+UINT32 KEProcessOnlyReadMemoryMDLWrite(PIRP pirp, PIO_STACK_LOCATION stack) {
+    HELL_PARAMS(pirp);
+    HELL_PARAMS(stack);
+    UINT32 readLen = 0;
+    ULONG length = sizeof(ProcessMemoryOpt);
+    PProcessMemoryOpt opt = (PProcessMemoryOpt)ExAllocatePool2(POOL_FLAG_NON_PAGED, length, 'opt');
+    if (opt != NULL && MmIsAddressValid(opt)) {
+        RtlZeroMemory(opt, length);
+        RtlCopyMemory(opt, pirp->AssociatedIrp.SystemBuffer, length);
+        NTSTATUS status = KWriteProcessOnlyReadMemoryByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, opt->UserBuffer, opt->Length);
+        pirp->IoStatus.Status = status;
+        if (status == STATUS_SUCCESS) {
+            readLen = opt->Length;
+            HLog("写入内存");
+            ExFreePoolWithTag(opt, 'opt');
+        }
+    } else {
+        pirp->IoStatus.Status = STATUS_UNSUCCESSFUL;
+    }
+    return readLen;
+}
+
+UINT32 KEProcessOnlyReadMemoryCR0Write(PIRP pirp, PIO_STACK_LOCATION stack) {
+    HELL_PARAMS(pirp);
+    HELL_PARAMS(stack);
+    UINT32 readLen = 0;
+    ULONG length = sizeof(ProcessMemoryOpt);
+    PProcessMemoryOpt opt = (PProcessMemoryOpt)ExAllocatePool2(POOL_FLAG_NON_PAGED, length, 'opt');
+    if (opt != NULL && MmIsAddressValid(opt)) {
+        RtlZeroMemory(opt, length);
+        RtlCopyMemory(opt, pirp->AssociatedIrp.SystemBuffer, length);
+        NTSTATUS status = KWriteProcessOnlyReadMemoryCR0ByPid((UINT32)opt->ProcessId, (PVOID)opt->Address, opt->UserBuffer, opt->Length);
+        pirp->IoStatus.Status = status;
+        if (status == STATUS_SUCCESS) {
+            readLen = opt->Length;
+            HLog("写入内存");
+            ExFreePoolWithTag(opt, 'opt');
+        }
+    } else {
+        pirp->IoStatus.Status = STATUS_UNSUCCESSFUL;
+    }
+    return readLen;
+}
+
+#pragma endregion
+
+
+

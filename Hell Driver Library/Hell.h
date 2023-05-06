@@ -2,7 +2,11 @@
 #define __HELL_HEADER__
 
 #define HELL_DRIVER
+#include <intrin.h>
 #include "Common.h"
+
+
+//#pragma warning(disable:4996)
 
 
 NTSTATUS CreateDevice(PDRIVER_OBJECT pDriver);
@@ -42,6 +46,12 @@ NTSTATUS IRPIoControl(PDEVICE_OBJECT pDevice, PIRP pirp);
 #define PROCESS_TERMINATE_KILL              (0x1041)
 
 #pragma endregion
+
+
+
+
+
+
 
 #pragma region ½á¹¹Ìå
 

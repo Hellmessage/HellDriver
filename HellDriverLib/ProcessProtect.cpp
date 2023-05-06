@@ -6,7 +6,7 @@ void StartProtectProcess() {
         return;
     }
     LPDWORD outSize = 0;
-    DeviceIoControl(driver, CODE_LOAD_SSDTHOOK, NULL, 0, NULL, 0, outSize, (LPOVERLAPPED)NULL);
+    DeviceIoControl(driver, IO_CODE_LOAD_SSDTHOOK, NULL, 0, NULL, 0, outSize, (LPOVERLAPPED)NULL);
 }
 
 void StopProtectProcess() {
@@ -15,7 +15,7 @@ void StopProtectProcess() {
         return;
     }
     LPDWORD outSize = 0;
-    DeviceIoControl(driver, CODE_UNLOAD_SSDTHOOK, NULL, 0, NULL, 0, outSize, (LPOVERLAPPED)NULL);
+    DeviceIoControl(driver, IO_CODE_UNLOAD_SSDTHOOK, NULL, 0, NULL, 0, outSize, (LPOVERLAPPED)NULL);
 }
 
 BOOLEAN ProtectProcess(UINT32 pid, ACCESS_MASK access) {
@@ -30,7 +30,7 @@ BOOLEAN ProtectProcess(UINT32 pid, ACCESS_MASK access) {
     item->ProcessId = pid;
     item->ExcludeAccess = access;
     DWORD outSize = 0;
-    DeviceIoControl(driver, CODE_IN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, &outSize, (LPOVERLAPPED)NULL);
+    DeviceIoControl(driver, IO_CODE_IN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, &outSize, (LPOVERLAPPED)NULL);
     free(item);
     return TRUE;
 }
@@ -47,7 +47,7 @@ BOOLEAN UnProtectProcess(UINT32 pid) {
     item->ProcessId = pid;
     item->ExcludeAccess = 0;
     DWORD outSize = 0;
-    DeviceIoControl(driver, CODE_UN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, &outSize, (LPOVERLAPPED)NULL);
+    DeviceIoControl(driver, IO_CODE_UN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, &outSize, (LPOVERLAPPED)NULL);
     free(item);
     return TRUE;
 }

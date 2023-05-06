@@ -6,7 +6,10 @@
 
 #ifndef PCH_H
 #define PCH_H
-
+#pragma warning(disable:4267)
+#pragma warning(disable:4312)
+#pragma warning(disable:4311)
+#pragma warning(disable:4302)
 #define _CRT_SECURE_NO_WARNINGS
 
 // add headers that you want to pre-compile here
@@ -15,7 +18,5 @@
 #include <winioctl.h>
 #include "../Hell Driver Library/Common.h"
 #include "HTools.h"
-
-
 
 #endif //PCH_H

@@ -36,9 +36,13 @@ BEGIN_MESSAGE_MAP(CDriverTestDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON5, &CDriverTestDlg::OnBnClickedCloseButton5)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON6, &CDriverTestDlg::OnBnClickedCloseButton6)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON7, &CDriverTestDlg::OnBnClickedCloseButton7)
-	ON_BN_CLICKED(IDC_BUTTON2, &CDriverTestDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON9, &CDriverTestDlg::OnBnClickedCloseButton9)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON8, &CDriverTestDlg::OnBnClickedCloseButton8)
+	ON_BN_CLICKED(IDC_BUTTON2, &CDriverTestDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CDriverTestDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, &CDriverTestDlg::OnBnClickedButton4)
+	ON_BN_CLICKED(IDC_BUTTON5, &CDriverTestDlg::OnBnClickedButton5)
+	ON_BN_CLICKED(IDC_BUTTON6, &CDriverTestDlg::OnBnClickedButton6)
 END_MESSAGE_MAP()
 
 BOOL CDriverTestDlg::OnInitDialog() {
@@ -165,12 +169,86 @@ void CDriverTestDlg::OnBnClickedButton2() {
 		return;
 	}
 	memset(buffer, 0, ml);
-	//UINT32 rlen = KeProcessReadMemory(pid, address, buffer, length);
+	//UINT32 rlen = KeProcessMemoryRead(pid, address, buffer, length);
 	UINT32 rlen = KeProcessMemoryMDLRead(pid, address, buffer, length);
 	CString sss;
 	sss.Format(L"%d", rlen);
 	MessageBox(sss);
 	MessageBoxA(NULL, HTools::w2s((WCHAR*)buffer).c_str(), "123123", 0);
+}
+
+void CDriverTestDlg::OnBnClickedButton5() {
+	CString addr;
+	GetDlgItem(IDC_EDIT2)->GetWindowTextW(addr);
+	UINT64 address = 0l;
+	address = wcstoll(addr, NULL, 16);
+
+	int pid = 0;
+	CString c;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(c); //»ñÈ¡
+	pid = atoi(CT2A(c.GetBuffer()));
+	CString len;
+	GetDlgItem(IDC_EDIT3)->GetWindowTextW(len);
+	UINT32 length = 0;
+	length = atoi(CT2A(len.GetBuffer()));
+	UINT32 ml = length + 4;
+	CHAR* buffer = (CHAR*)malloc(ml);
+	if (buffer == NULL) {
+		return;
+	}
+	memset(buffer, 0, ml);
+	//UINT32 rlen = KeProcessMemoryRead(pid, address, buffer, length);
+	UINT32 rlen = KeProcessMemoryMDLRead(pid, address, buffer, length);
+	CString sss;
+	sss.Format(L"%d", rlen);
+	MessageBox(sss);
+	MessageBoxA(NULL, HTools::w2s((WCHAR*)buffer).c_str(), "123123", 0);
+}
+
+
+
+void CDriverTestDlg::OnBnClickedButton3() {
+	CString addr;
+	GetDlgItem(IDC_EDIT2)->GetWindowTextW(addr);
+	UINT64 address = 0l;
+	address = wcstoll(addr, NULL, 16);
+	int pid = 0;
+	CString process;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(process);
+	pid = atoi(CT2A(process.GetBuffer()));
+	CString data;
+	GetDlgItem(IDC_EDIT4)->GetWindowTextW(data);
+	UINT32 rlen = KeProcessMemoryWrite(pid, address, data.GetBuffer(), data.GetLength() * 2);
+	//MessageBox(len);
+}
+
+void CDriverTestDlg::OnBnClickedButton4() {
+	CString addr;
+	GetDlgItem(IDC_EDIT2)->GetWindowTextW(addr);
+	UINT64 address = 0l;
+	address = wcstoll(addr, NULL, 16);
+	int pid = 0;
+	CString process;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(process);
+	pid = atoi(CT2A(process.GetBuffer()));
+	CString data;
+	GetDlgItem(IDC_EDIT4)->GetWindowTextW(data);
+	UINT32 rlen = KeProcessOnlyReadMemoryWrite(pid, address, data.GetBuffer(), data.GetLength() * 2);
+	//MessageBox(len);
+}
+
+void CDriverTestDlg::OnBnClickedButton6() {
+	CString addr;
+	GetDlgItem(IDC_EDIT2)->GetWindowTextW(addr);
+	UINT64 address = 0l;
+	address = wcstoll(addr, NULL, 16);
+	int pid = 0;
+	CString process;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(process);
+	pid = atoi(CT2A(process.GetBuffer()));
+	CString data;
+	GetDlgItem(IDC_EDIT4)->GetWindowTextW(data);
+	UINT32 rlen = KeProcessOnlyReadMemoryCR0Write(pid, address, data.GetBuffer(), data.GetLength() * 2);
 }
 
 #define DRIVER_NAME		L"HellDriver"
@@ -189,7 +267,16 @@ void CDriverTestDlg::OnBnClickedCloseButton9() {
 	InstallDriver(DRIVER_NAME, path);
 }
 
-
 void CDriverTestDlg::OnBnClickedCloseButton8() {
 	UninstallDriver(DRIVER_NAME);
 }
+
+
+
+
+
+
+
+
+
+
