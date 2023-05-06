@@ -13,26 +13,27 @@ LIST_ENTRY g_ProtectList;
 KSPIN_LOCK g_Lock;
 
 PProtectProcessItem GetProtectByPid(UINT32 pid) {
-    HELL_IN_LOCK(&g_Lock);
-    if (g_InitProtect && g_ProtectSize > 0) {
-        PLIST_ENTRY temp = g_ProtectList.Flink;
-        do {
-            PProtectProcessItem pdata = CONTAINING_RECORD(temp, ProtectProcessItem, ListEntry);
-            if (pdata->ProcessId == pid) {
-                HELL_UN_LOCK(&g_Lock);
-                return pdata;
-            }
-            temp = pdata->ListEntry.Flink;
-        } while (temp != g_ProtectList.Blink);
+    if (g_InitProtect) {
+        HELL_IN_LOCK(&g_Lock);
+        if (g_ProtectSize > 0) {
+            PLIST_ENTRY temp = g_ProtectList.Flink;
+            do {
+                PProtectProcessItem pdata = CONTAINING_RECORD(temp, ProtectProcessItem, ListEntry);
+                if (pdata->ProcessId == pid) {
+                    HELL_UN_LOCK(&g_Lock);
+                    return pdata;
+                }
+                temp = pdata->ListEntry.Flink;
+            } while (temp != g_ProtectList.Blink);
+        }
+        HELL_UN_LOCK(&g_Lock);
     }
-    HELL_UN_LOCK(&g_Lock);
     return NULL;
 }
 
 void FreeSSDTProtect() {
     if (g_InitProtect) {
         HELL_IN_LOCK(&g_Lock);
-        g_InitProtect = FALSE;
         if (g_ProtectSize > 0) {
             while (!IsListEmpty(&g_ProtectList)) {
                 PLIST_ENTRY pEntry = RemoveHeadList(&g_ProtectList);
@@ -46,8 +47,8 @@ void FreeSSDTProtect() {
 }
 
 void AddSSDTProtect(UINT32 pid, ACCESS_MASK access) {
-    HELL_IN_LOCK(&g_Lock);
     if (g_InitProtect) {
+        HELL_IN_LOCK(&g_Lock);
         PProtectProcessItem old = NULL;
         if (g_ProtectSize > 0) {
             PLIST_ENTRY temp = g_ProtectList.Flink;
@@ -75,37 +76,37 @@ void AddSSDTProtect(UINT32 pid, ACCESS_MASK access) {
             old->ExcludeAccess = access;
             HLog("修改保护 pid:%d access:%u", old->ProcessId, old->ExcludeAccess);
         }
+        HELL_UN_LOCK(&g_Lock);
     }
-    HELL_UN_LOCK(&g_Lock);
 }
 void RemoveSSDTProtect(UINT32 pid) {
-    HELL_IN_LOCK(&g_Lock);
-    if (g_InitProtect && g_ProtectSize > 0) {
-        PLIST_ENTRY temp = g_ProtectList.Flink;
-        do {
-            PProtectProcessItem pdata = CONTAINING_RECORD(temp, ProtectProcessItem, ListEntry);
-            if (pdata->ProcessId == pid) {
-                HLog("移除保护 pid:%d access:%u", pdata->ProcessId, pdata->ExcludeAccess);
-                RemoveEntryList(&pdata->ListEntry);
-                ExFreePoolWithTag(pdata, g_Tag);
-                g_ProtectSize--;
-                break;
-            }
-            temp = pdata->ListEntry.Flink;
-        } while (temp != g_ProtectList.Blink);
+    if (g_InitProtect) {
+        HELL_IN_LOCK(&g_Lock);
+        if (g_ProtectSize > 0) {
+            PLIST_ENTRY temp = g_ProtectList.Flink;
+            do {
+                PProtectProcessItem pdata = CONTAINING_RECORD(temp, ProtectProcessItem, ListEntry);
+                if (pdata->ProcessId == pid) {
+                    HLog("移除保护 pid:%d access:%u", pdata->ProcessId, pdata->ExcludeAccess);
+                    RemoveEntryList(&pdata->ListEntry);
+                    ExFreePoolWithTag(pdata, g_Tag);
+                    g_ProtectSize--;
+                    break;
+                }
+                temp = pdata->ListEntry.Flink;
+            } while (temp != g_ProtectList.Blink);
+        }
+        HELL_UN_LOCK(&g_Lock);
     }
-    HELL_UN_LOCK(&g_Lock);
 }
 
 void InitSSDTProtect() {
     if (!g_InitProtect) {
-        HELL_IN_LOCK(&g_Lock);
         g_InitProtect = TRUE;
         KeInitializeSpinLock(&g_Lock);
         if (g_ProtectSize <= 0) {
             InitializeListHead(&g_ProtectList);
         }
-        HELL_UN_LOCK(&g_Lock);
     }
 }
 
