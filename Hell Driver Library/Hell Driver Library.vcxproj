@@ -146,19 +146,26 @@
     <ClCompile>
       <LanguageStandard>Default</LanguageStandard>
       <LanguageStandard_C>Default</LanguageStandard_C>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoArray\AutoArray.c" />
     <ClCompile Include="DeviceSymbol.c" />
     <ClCompile Include="DriverEntry.c" />
+    <ClCompile Include="HUtil.c" />
     <ClCompile Include="IRP.c" />
+    <ClCompile Include="SSDTHook.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AutoArray\AutoArray.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Hell.h" />
+    <ClInclude Include="HUtil.h" />
+    <ClInclude Include="SSDTHook.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -36,4 +36,9 @@ public:
 	afx_msg void OnBnClickedReadButton();
 	afx_msg void OnBnClickedCloseButton();
 	afx_msg void OnBnClickedWriteButton();
+	afx_msg void OnBnClickedCloseButton2();
+	afx_msg void OnBnClickedCloseButton3();
+	afx_msg void OnBnClickedCloseButton4();
+	afx_msg void OnBnClickedCloseButton5();
+	afx_msg void OnBnClickedCloseButton6();
 };

@@ -29,6 +29,11 @@ BEGIN_MESSAGE_MAP(CDriverTestDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_READ_BUTTON, &CDriverTestDlg::OnBnClickedReadButton)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON, &CDriverTestDlg::OnBnClickedCloseButton)
 	ON_BN_CLICKED(IDC_WRITE_BUTTON, &CDriverTestDlg::OnBnClickedWriteButton)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON2, &CDriverTestDlg::OnBnClickedCloseButton2)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON3, &CDriverTestDlg::OnBnClickedCloseButton3)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON4, &CDriverTestDlg::OnBnClickedCloseButton4)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON5, &CDriverTestDlg::OnBnClickedCloseButton5)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON6, &CDriverTestDlg::OnBnClickedCloseButton6)
 END_MESSAGE_MAP()
 
 BOOL CDriverTestDlg::OnInitDialog() {
@@ -73,15 +78,20 @@ static HANDLE DriverHandle = NULL;
 
 void CDriverTestDlg::OnBnClickedCreatefileButton() {
 	if (DriverHandle == NULL) {
-		DriverHandle = CreateFile(符号连接名,
+		DriverHandle = CreateFile(HELL_SYMBOL_NAME,
 			GENERIC_READ | GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		if (DriverHandle == HANDLE(-1)) {
+			DriverHandle = NULL;
+		}
 	}
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton() {
 	if (DriverHandle != NULL) {
-		CloseHandle(DriverHandle);
+		if (CloseHandle(DriverHandle)) {
+			DriverHandle = NULL;
+		}
 	}
 }
 
@@ -89,11 +99,55 @@ void CDriverTestDlg::OnBnClickedWriteButton() {
 	char* data = "测试传输!!!";
 	char buffer[20] = { 0 };
 	LPDWORD outSize = 0;
-	DeviceIoControl(DriverHandle, HCODE(0x803), data, (DWORD)strlen(data), &buffer, 20, outSize, (LPOVERLAPPED)NULL);
+	DeviceIoControl(DriverHandle, HCODE(0x803), data, (DWORD)strlen(data), &buffer, (DWORD)strlen(buffer), outSize, (LPOVERLAPPED)NULL);
 }
 
 void CDriverTestDlg::OnBnClickedReadButton() {
 	
 }
 
+void CDriverTestDlg::OnBnClickedCloseButton2() {
+	LPDWORD outSize = 0;
+	DeviceIoControl(DriverHandle, CODE_LOAD_SSDTHOOK, NULL, 0, NULL, 0, outSize, (LPOVERLAPPED)NULL);
+}
 
+void CDriverTestDlg::OnBnClickedCloseButton3() {
+	LPDWORD outSize = 0;
+	DeviceIoControl(DriverHandle, CODE_UNLOAD_SSDTHOOK, NULL, 0, NULL, 0, outSize, (LPOVERLAPPED)NULL);
+}
+
+
+void CDriverTestDlg::OnBnClickedCloseButton4() {
+	PProtectProcessItem item = (PProtectProcessItem)malloc(sizeof(ProtectProcessItem));
+	if (item != NULL) {
+		item->ProcessId = GetCurrentProcessId();
+		item->ExcludeAccess = PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE;
+		LPDWORD outSize = 0;
+		DeviceIoControl(DriverHandle, CODE_IN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, outSize, (LPOVERLAPPED)NULL);
+		free(item);
+	}
+}
+
+
+void CDriverTestDlg::OnBnClickedCloseButton5() {
+	PProtectProcessItem item = (PProtectProcessItem)malloc(sizeof(ProtectProcessItem));
+	if (item != NULL) {
+		item->ProcessId = GetCurrentProcessId();
+		item->ExcludeAccess = PROCESS_TERMINATE;
+		LPDWORD outSize = 0;
+		DeviceIoControl(DriverHandle, CODE_IN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, outSize, (LPOVERLAPPED)NULL);
+		free(item);
+	}
+}
+
+
+void CDriverTestDlg::OnBnClickedCloseButton6() {
+	PProtectProcessItem item = (PProtectProcessItem)malloc(sizeof(ProtectProcessItem));
+	if (item != NULL) {
+		item->ProcessId = GetCurrentProcessId();
+		item->ExcludeAccess = 0;
+		LPDWORD outSize = 0;
+		DeviceIoControl(DriverHandle, CODE_UN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, outSize, (LPOVERLAPPED)NULL);
+		free(item);
+	}
+}

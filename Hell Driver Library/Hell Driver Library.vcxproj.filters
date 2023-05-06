@@ -17,6 +17,15 @@
       <UniqueIdentifier>{8E41214B-6785-4CFE-B992-037D68949A14}</UniqueIdentifier>
       <Extensions>inf;inv;inx;mof;mc;</Extensions>
     </Filter>
+    <Filter Include="SSDT">
+      <UniqueIdentifier>{b83e1d77-3fc4-4f1a-923e-3094df5564f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AutoArray">
+      <UniqueIdentifier>{b79a0a54-0c2d-4116-b782-bfdd11e96316}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{dedfb2ce-4a16-410a-af3b-b9315e890216}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DriverEntry.c">
@@ -28,6 +37,15 @@
     <ClCompile Include="IRP.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SSDTHook.c">
+      <Filter>SSDT</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoArray\AutoArray.c">
+      <Filter>AutoArray</Filter>
+    </ClCompile>
+    <ClCompile Include="HUtil.c">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Hell.h">
@@ -35,6 +53,15 @@
     </ClInclude>
     <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SSDTHook.h">
+      <Filter>SSDT</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoArray\AutoArray.h">
+      <Filter>AutoArray</Filter>
+    </ClInclude>
+    <ClInclude Include="HUtil.h">
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
