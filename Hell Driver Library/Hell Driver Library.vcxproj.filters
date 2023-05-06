@@ -23,6 +23,9 @@
     <Filter Include="Util">
       <UniqueIdentifier>{dedfb2ce-4a16-410a-af3b-b9315e890216}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{0473c4e5-918c-41ca-b1a2-a49c918a3ec4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DriverEntry.c">
@@ -40,6 +43,9 @@
     <ClCompile Include="HUtil.c">
       <Filter>Util</Filter>
     </ClCompile>
+    <ClCompile Include="Memory.c">
+      <Filter>Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Hell.h">
@@ -53,6 +59,9 @@
     </ClInclude>
     <ClInclude Include="HUtil.h">
       <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.h">
+      <Filter>Memory</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

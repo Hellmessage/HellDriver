@@ -7,6 +7,7 @@
 #include "DriverTest.h"
 #include "DriverTestDlg.h"
 #include "afxdialogex.h"
+#include "../HellDriverLib/HellDriver.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -34,15 +35,16 @@ BEGIN_MESSAGE_MAP(CDriverTestDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON4, &CDriverTestDlg::OnBnClickedCloseButton4)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON5, &CDriverTestDlg::OnBnClickedCloseButton5)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON6, &CDriverTestDlg::OnBnClickedCloseButton6)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON7, &CDriverTestDlg::OnBnClickedCloseButton7)
+	ON_BN_CLICKED(IDC_BUTTON2, &CDriverTestDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON9, &CDriverTestDlg::OnBnClickedCloseButton9)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON8, &CDriverTestDlg::OnBnClickedCloseButton8)
 END_MESSAGE_MAP()
 
 BOOL CDriverTestDlg::OnInitDialog() {
 	CDialogEx::OnInitDialog();
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
-
-	// TODO: Add extra initialization here
-
 	return TRUE;
 }
 
@@ -77,22 +79,30 @@ void CDriverTestDlg::OnBnClickedOk() {
 static HANDLE DriverHandle = NULL;
 
 void CDriverTestDlg::OnBnClickedCreatefileButton() {
-	if (DriverHandle == NULL) {
+	/*if (DriverHandle == NULL) {
 		DriverHandle = CreateFile(HELL_SYMBOL_NAME,
 			GENERIC_READ | GENERIC_WRITE,
-			FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			FILE_SHARE_READ | FILE_SHARE_WRITE, 
+			NULL, 
+			OPEN_EXISTING, 
+			FILE_ATTRIBUTE_NORMAL, 
+			NULL);
 		if (DriverHandle == HANDLE(-1)) {
 			DriverHandle = NULL;
 		}
-	}
+	}*/
+
+	OpenDriver(HELL_SYMBOL_NAME);
+
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton() {
-	if (DriverHandle != NULL) {
+	CloseDriver();
+	/*if (DriverHandle != NULL) {
 		if (CloseHandle(DriverHandle)) {
 			DriverHandle = NULL;
 		}
-	}
+	}*/
 }
 
 void CDriverTestDlg::OnBnClickedWriteButton() {
@@ -107,47 +117,79 @@ void CDriverTestDlg::OnBnClickedReadButton() {
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton2() {
-	LPDWORD outSize = 0;
-	DeviceIoControl(DriverHandle, CODE_LOAD_SSDTHOOK, NULL, 0, NULL, 0, outSize, (LPOVERLAPPED)NULL);
+	StartProtectProcess();
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton3() {
-	LPDWORD outSize = 0;
-	DeviceIoControl(DriverHandle, CODE_UNLOAD_SSDTHOOK, NULL, 0, NULL, 0, outSize, (LPOVERLAPPED)NULL);
+	StopProtectProcess();
 }
 
-
 void CDriverTestDlg::OnBnClickedCloseButton4() {
-	PProtectProcessItem item = (PProtectProcessItem)malloc(sizeof(ProtectProcessItem));
-	if (item != NULL) {
-		item->ProcessId = GetCurrentProcessId();
-		item->ExcludeAccess = PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE;
-		LPDWORD outSize = 0;
-		DeviceIoControl(DriverHandle, CODE_IN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, outSize, (LPOVERLAPPED)NULL);
-		free(item);
-	}
+	ProtectProcess(GetCurrentProcessId(), PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
 }
 
 
 void CDriverTestDlg::OnBnClickedCloseButton5() {
-	PProtectProcessItem item = (PProtectProcessItem)malloc(sizeof(ProtectProcessItem));
-	if (item != NULL) {
-		item->ProcessId = GetCurrentProcessId();
-		item->ExcludeAccess = PROCESS_TERMINATE;
-		LPDWORD outSize = 0;
-		DeviceIoControl(DriverHandle, CODE_IN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, outSize, (LPOVERLAPPED)NULL);
-		free(item);
+	ProtectProcess(GetCurrentProcessId(), PROCESS_TERMINATE);
+}
+
+void CDriverTestDlg::OnBnClickedCloseButton6() {
+	UnProtectProcess(GetCurrentProcessId());
+}
+
+void CDriverTestDlg::OnBnClickedCloseButton7() {
+	int pid = 0;
+	CString c;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(c);
+	pid = atoi(CT2A(c.GetBuffer()));
+	ProtectProcess(pid, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
+}
+
+void CDriverTestDlg::OnBnClickedButton2() {
+	CString addr;
+	GetDlgItem(IDC_EDIT2)->GetWindowTextW(addr);
+	UINT64 address = 0l;
+	address = wcstoll(addr, NULL, 16);
+
+	int pid = 0;
+	CString c;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(c); //»ñÈ¡
+	pid = atoi(CT2A(c.GetBuffer()));
+	CString len;
+	GetDlgItem(IDC_EDIT3)->GetWindowTextW(len);
+	UINT32 length = 0;
+	length = atoi(CT2A(len.GetBuffer()));
+	UINT32 ml = length + 4;
+	CHAR* buffer = (CHAR*)malloc(ml);
+	if (buffer == NULL) {
+		return;
 	}
+	memset(buffer, 0, ml);
+	//UINT32 rlen = KeProcessReadMemory(pid, address, buffer, length);
+	UINT32 rlen = KeProcessMemoryMDLRead(pid, address, buffer, length);
+	CString sss;
+	sss.Format(L"%d", rlen);
+	MessageBox(sss);
+	MessageBoxA(NULL, HTools::w2s((WCHAR*)buffer).c_str(), "123123", 0);
+}
+
+#define DRIVER_NAME		L"HellDriver"
+
+void CDriverTestDlg::OnBnClickedCloseButton9() {
+	TCHAR tcsModulePath[_MAX_PATH];
+	::GetModuleFileName(NULL, tcsModulePath, _MAX_PATH);
+	
+	TCHAR drive[_MAX_DRIVE];
+	TCHAR dir[_MAX_DIR];
+	_wsplitpath(tcsModulePath, drive, dir, NULL, NULL);
+
+	CString path;
+	path.Format(L"%s%sHellDriverLibrary.sys", drive, dir);
+	MessageBox(path);
+	InstallDriver(DRIVER_NAME, path);
 }
 
 
-void CDriverTestDlg::OnBnClickedCloseButton6() {
-	PProtectProcessItem item = (PProtectProcessItem)malloc(sizeof(ProtectProcessItem));
-	if (item != NULL) {
-		item->ProcessId = GetCurrentProcessId();
-		item->ExcludeAccess = 0;
-		LPDWORD outSize = 0;
-		DeviceIoControl(DriverHandle, CODE_UN_SSDT_PROTECT, item, sizeof(ProtectProcessItem), NULL, 0, outSize, (LPOVERLAPPED)NULL);
-		free(item);
-	}
+void CDriverTestDlg::OnBnClickedCloseButton8() {
+	UninstallDriver(DRIVER_NAME);
 }

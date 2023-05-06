@@ -13,57 +13,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="进程保护">
+      <UniqueIdentifier>{58fb1a39-6fa0-470e-8119-c353409a6179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Driver">
+      <UniqueIdentifier>{e53b028a-0264-42a4-89bc-ada3ca561116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="内核内存读写">
+      <UniqueIdentifier>{b79df33b-aa7b-4f53-8486-e95a82028b39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DriverTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DriverTestDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
+    <ClInclude Include="ProcessProtect.h">
+      <Filter>进程保护</Filter>
+    </ClInclude>
+    <ClInclude Include="Hell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="HellDriver.h">
+      <Filter>Driver</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HTools.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="KeMemory.h">
+      <Filter>内核内存读写</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DriverTest.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ProcessProtect.cpp">
+      <Filter>进程保护</Filter>
     </ClCompile>
-    <ClCompile Include="DriverTestDlg.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="HellDriver.cpp">
+      <Filter>Driver</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HTools.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="KeMemory.cpp">
+      <Filter>内核内存读写</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DriverTest.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\DriverTest.rc2">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\DriverTest.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

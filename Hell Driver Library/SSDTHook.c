@@ -65,7 +65,7 @@ void AddSSDTProtect(UINT32 pid, ACCESS_MASK access) {
         if (old == NULL) {
             PProtectProcessItem protect = (PProtectProcessItem)ExAllocatePool2(POOL_FLAG_PAGED, sizeof(ProtectProcessItem), g_Tag);
             if (protect != NULL) {
-                memset(protect, 0x0, sizeof(ProtectProcessItem));
+                RtlZeroMemory(protect, sizeof(ProtectProcessItem));
                 protect->ProcessId = pid;
                 protect->ExcludeAccess = access;
                 InsertHeadList(&g_ProtectList, &protect->ListEntry);

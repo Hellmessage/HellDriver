@@ -41,4 +41,11 @@ public:
 	afx_msg void OnBnClickedCloseButton4();
 	afx_msg void OnBnClickedCloseButton5();
 	afx_msg void OnBnClickedCloseButton6();
+	afx_msg void OnEnChangeEdit1();
+	afx_msg void OnBnClickedCloseButton7();
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnEnChangeEdit2();
+	afx_msg void OnEnChangeEdit3();
+	afx_msg void OnBnClickedCloseButton9();
+	afx_msg void OnBnClickedCloseButton8();
 };

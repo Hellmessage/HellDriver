@@ -7,14 +7,9 @@
 #ifndef PCH_H
 #define PCH_H
 
-#define _CRT_SECURE_NO_WARNINGS
-
 // add headers that you want to pre-compile here
 #include "framework.h"
-#include <Windows.h>
-#include <winioctl.h>
-#include "../Hell Driver Library/Common.h"
-#include "HTools.h"
+#include "Hell.h"
 
 
 
