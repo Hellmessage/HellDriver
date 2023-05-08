@@ -1,5 +1,5 @@
 #include "Hell.h"
-#include "SSDTHook.h"
+#include "SSDT.h"
 
 NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT pDriver, _In_ PUNICODE_STRING path) {
     HLog("加载驱动<%wZ>", path);
@@ -18,6 +18,9 @@ NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT pDriver, _In_ PUNICODE_STRING path) {
         pDriver->MajorFunction[IRP_MJ_CREATE] = IRPHandle;
         pDriver->MajorFunction[IRP_MJ_CLOSE] = IRPHandle;
         pDriver->MajorFunction[IRP_MJ_DEVICE_CONTROL] = IRPIoControl;
+
+
+        EnumRegisterHookCallBacks();
     }
     return status;
 }
@@ -25,8 +28,9 @@ NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT pDriver, _In_ PUNICODE_STRING path) {
 void UnloadDriver(PDRIVER_OBJECT pDriver) {
     HLog("卸载开始");
 
-    UnloadSSDTHook();
-    FreeSSDTProtect();
+    
+    ProcessAccessHookUninstall();
+    
     DeleteDevice(pDriver);
 
     HLog("卸载完成");

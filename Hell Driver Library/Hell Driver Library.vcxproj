@@ -155,17 +155,20 @@
   <ItemGroup>
     <ClCompile Include="DeviceSymbol.c" />
     <ClCompile Include="DriverEntry.c" />
+    <ClCompile Include="FetchHook.c" />
     <ClCompile Include="HUtil.c" />
     <ClCompile Include="IRP.c" />
     <ClCompile Include="Memory.c" />
-    <ClCompile Include="SSDTHook.c" />
+    <ClCompile Include="ProcessAccess.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
+    <ClInclude Include="FetchHook.h" />
     <ClInclude Include="Hell.h" />
     <ClInclude Include="HUtil.h" />
     <ClInclude Include="Memory.h" />
-    <ClInclude Include="SSDTHook.h" />
+    <ClInclude Include="ProcessAccess.h" />
+    <ClInclude Include="SSDT.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

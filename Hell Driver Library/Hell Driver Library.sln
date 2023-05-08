@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hell Driver Library", "Hell Driver Library.vcxproj", "{B2DCDA41-CF3D-4280-BA5B-A96BF40ECBA5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DriverTest", "..\DriverTest\DriverTest.vcxproj", "{F2E8D5D1-74F8-4645-972A-E346E343DD2C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3C8EF379-76BD-4AAE-A6C2-D9D0C0F7DD6B} = {3C8EF379-76BD-4AAE-A6C2-D9D0C0F7DD6B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HellDriverLib", "..\HellDriverLib\HellDriverLib.vcxproj", "{3C8EF379-76BD-4AAE-A6C2-D9D0C0F7DD6B}"
 EndProject

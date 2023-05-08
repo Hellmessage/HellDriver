@@ -43,12 +43,26 @@ BEGIN_MESSAGE_MAP(CDriverTestDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON4, &CDriverTestDlg::OnBnClickedButton4)
 	ON_BN_CLICKED(IDC_BUTTON5, &CDriverTestDlg::OnBnClickedButton5)
 	ON_BN_CLICKED(IDC_BUTTON6, &CDriverTestDlg::OnBnClickedButton6)
+	ON_BN_CLICKED(IDC_BUTTON7, &CDriverTestDlg::OnBnClickedButton7)
+	ON_BN_CLICKED(IDC_BUTTON8, &CDriverTestDlg::OnBnClickedButton8)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON10, &CDriverTestDlg::OnBnClickedCloseButton10)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON11, &CDriverTestDlg::OnBnClickedCloseButton11)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON12, &CDriverTestDlg::OnBnClickedCloseButton12)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON14, &CDriverTestDlg::OnBnClickedCloseButton14)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON13, &CDriverTestDlg::OnBnClickedCloseButton13)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON15, &CDriverTestDlg::OnBnClickedCloseButton15)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON16, &CDriverTestDlg::OnBnClickedCloseButton16)
 END_MESSAGE_MAP()
 
 BOOL CDriverTestDlg::OnInitDialog() {
 	CDialogEx::OnInitDialog();
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
+
+	CString str;
+	str.Format(L"%d", GetCurrentProcessId());
+	GetDlgItem(IDC_EDIT5)->SetWindowTextW(str);
+
 	return TRUE;
 }
 
@@ -83,62 +97,50 @@ void CDriverTestDlg::OnBnClickedOk() {
 static HANDLE DriverHandle = NULL;
 
 void CDriverTestDlg::OnBnClickedCreatefileButton() {
-	/*if (DriverHandle == NULL) {
-		DriverHandle = CreateFile(HELL_SYMBOL_NAME,
-			GENERIC_READ | GENERIC_WRITE,
-			FILE_SHARE_READ | FILE_SHARE_WRITE, 
-			NULL, 
-			OPEN_EXISTING, 
-			FILE_ATTRIBUTE_NORMAL, 
-			NULL);
-		if (DriverHandle == HANDLE(-1)) {
-			DriverHandle = NULL;
-		}
-	}*/
-
 	OpenDriver(HELL_SYMBOL_NAME);
-
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton() {
 	CloseDriver();
-	/*if (DriverHandle != NULL) {
-		if (CloseHandle(DriverHandle)) {
-			DriverHandle = NULL;
-		}
-	}*/
 }
 
 void CDriverTestDlg::OnBnClickedWriteButton() {
-	char* data = "测试传输!!!";
-	char buffer[20] = { 0 };
-	LPDWORD outSize = 0;
-	DeviceIoControl(DriverHandle, HCODE(0x803), data, (DWORD)strlen(data), &buffer, (DWORD)strlen(buffer), outSize, (LPOVERLAPPED)NULL);
-}
-
-void CDriverTestDlg::OnBnClickedReadButton() {
 	
 }
 
-void CDriverTestDlg::OnBnClickedCloseButton2() {
-	StartProtectProcess();
+void CDriverTestDlg::OnBnClickedReadButton() {
+	UINT32 at = HPAT_ENHANCE | HPAT_REDUCE | HPAT_PROTECT;
+	CString str;
+	str.Format(L"%d", at);
+	MessageBox(str);
+
+	UINT et = (at & HPAT_ENHANCE) == HPAT_ENHANCE;
+	str.Format(L"%d", et);
+	MessageBox(str);
+
+	UINT rt = (at & HPAT_REDUCE) == HPAT_REDUCE;
+	str.Format(L"%d", rt);
+	MessageBox(str);
+
+	UINT pt = (at & HPAT_PROTECT) == HPAT_PROTECT;
+	str.Format(L"%d", pt);
+	MessageBox(str);
+
 }
 
-void CDriverTestDlg::OnBnClickedCloseButton3() {
-	StopProtectProcess();
-}
 
 void CDriverTestDlg::OnBnClickedCloseButton4() {
-	ProtectProcess(GetCurrentProcessId(), PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
+	ProcessAccessSetHook(GetCurrentProcessId(), HPAT_ENHANCE, NULL);
+	//ProtectProcess(GetCurrentProcessId(), PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
 }
 
-
 void CDriverTestDlg::OnBnClickedCloseButton5() {
-	ProtectProcess(GetCurrentProcessId(), PROCESS_TERMINATE);
+	ProcessAccessSetHook(GetCurrentProcessId(), HPAT_REDUCE, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
+	//ProtectProcess(GetCurrentProcessId(), PROCESS_TERMINATE);
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton6() {
-	UnProtectProcess(GetCurrentProcessId());
+	//UnProtectProcess(GetCurrentProcessId());
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton7() {
@@ -146,7 +148,17 @@ void CDriverTestDlg::OnBnClickedCloseButton7() {
 	CString c;
 	GetDlgItem(IDC_EDIT1)->GetWindowTextW(c);
 	pid = atoi(CT2A(c.GetBuffer()));
-	ProtectProcess(pid, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
+	//ProtectProcess(pid, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
+	ProcessAccessSetHook(pid, HPAT_ENHANCE, NULL);
+}
+
+void CDriverTestDlg::OnBnClickedCloseButton11() {
+	int pid = 0;
+	CString c;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(c);
+	pid = atoi(CT2A(c.GetBuffer()));
+	//ProtectProcess(pid, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
+	ProcessAccessSetHook(pid, HPAT_REDUCE, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
 }
 
 void CDriverTestDlg::OnBnClickedButton2() {
@@ -197,8 +209,34 @@ void CDriverTestDlg::OnBnClickedButton5() {
 		return;
 	}
 	memset(buffer, 0, ml);
-	//UINT32 rlen = KeProcessMemoryRead(pid, address, buffer, length);
-	UINT32 rlen = KeProcessMemoryMDLRead(pid, address, buffer, length);
+	UINT32 rlen = KeProcessMemoryCR3Read(pid, address, buffer, length);
+	CString sss;
+	sss.Format(L"%d", rlen);
+	MessageBox(sss);
+	MessageBoxA(NULL, HTools::w2s((WCHAR*)buffer).c_str(), "123123", 0);
+}
+
+void CDriverTestDlg::OnBnClickedButton7() {
+	CString addr;
+	GetDlgItem(IDC_EDIT2)->GetWindowTextW(addr);
+	UINT64 address = 0l;
+	address = wcstoll(addr, NULL, 16);
+
+	int pid = 0;
+	CString c;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(c); //获取
+	pid = atoi(CT2A(c.GetBuffer()));
+	CString len;
+	GetDlgItem(IDC_EDIT3)->GetWindowTextW(len);
+	UINT32 length = 0;
+	length = atoi(CT2A(len.GetBuffer()));
+	UINT32 ml = length + 4;
+	CHAR* buffer = (CHAR*)malloc(ml);
+	if (buffer == NULL) {
+		return;
+	}
+	memset(buffer, 0, ml);
+	UINT32 rlen = KeProcessPhysicalMemoryRead(pid, address, buffer, length);
 	CString sss;
 	sss.Format(L"%d", rlen);
 	MessageBox(sss);
@@ -251,8 +289,23 @@ void CDriverTestDlg::OnBnClickedButton6() {
 	UINT32 rlen = KeProcessOnlyReadMemoryCR0Write(pid, address, data.GetBuffer(), data.GetLength() * 2);
 }
 
-#define DRIVER_NAME		L"HellDriver"
 
+void CDriverTestDlg::OnBnClickedButton8() {
+	CString addr;
+	GetDlgItem(IDC_EDIT2)->GetWindowTextW(addr);
+	UINT64 address = 0l;
+	address = wcstoll(addr, NULL, 16);
+	int pid = 0;
+	CString process;
+	GetDlgItem(IDC_EDIT1)->GetWindowTextW(process);
+	pid = atoi(CT2A(process.GetBuffer()));
+	CString data;
+	GetDlgItem(IDC_EDIT4)->GetWindowTextW(data);
+	UINT32 rlen = KeProcessPhysicalMemoryWrite(pid, address, data.GetBuffer(), data.GetLength() * 2);
+}
+
+
+#define DRIVER_NAME		L"HellDriver"
 void CDriverTestDlg::OnBnClickedCloseButton9() {
 	TCHAR tcsModulePath[_MAX_PATH];
 	::GetModuleFileName(NULL, tcsModulePath, _MAX_PATH);
@@ -273,6 +326,9 @@ void CDriverTestDlg::OnBnClickedCloseButton8() {
 
 
 
+void CDriverTestDlg::OnBnClickedCloseButton10() {
+	GetFetchHook();
+}
 
 
 
@@ -280,3 +336,69 @@ void CDriverTestDlg::OnBnClickedCloseButton8() {
 
 
 
+
+
+
+
+
+
+
+
+
+void CDriverTestDlg::OnBnClickedCloseButton2() {
+	ProcessAccessInstall();
+}
+
+void CDriverTestDlg::OnBnClickedCloseButton3() {
+	ProcessAccessUninstall();
+}
+
+//提升
+void CDriverTestDlg::OnBnClickedCloseButton12() {
+	int pid = 0;
+	CString tpid;
+	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
+	pid = atoi(CT2A(tpid.GetBuffer()));
+
+	ProcessAccessSetHook(pid, HPAT_ENHANCE, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
+}
+
+//维持
+void CDriverTestDlg::OnBnClickedCloseButton14() {
+	int pid = 0;
+	CString tpid;
+	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
+	pid = atoi(CT2A(tpid.GetBuffer()));
+
+	ProcessAccessSetHook(pid, HPAT_MAINTAIN, 0);
+}
+
+//降低
+void CDriverTestDlg::OnBnClickedCloseButton13() {
+	int pid = 0;
+	CString tpid;
+	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
+	pid = atoi(CT2A(tpid.GetBuffer()));
+
+	ProcessAccessSetHook(pid, HPAT_REDUCE, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
+}
+
+//保护读写关
+void CDriverTestDlg::OnBnClickedCloseButton15() {
+	int pid = 0;
+	CString tpid;
+	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
+	pid = atoi(CT2A(tpid.GetBuffer()));
+
+	ProcessAccessSetHook(pid, HPAT_PROTECT, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
+}
+
+//移除
+void CDriverTestDlg::OnBnClickedCloseButton16() {
+	int pid = 0;
+	CString tpid;
+	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
+	pid = atoi(CT2A(tpid.GetBuffer()));
+
+	ProcessAccessDelHook(pid);
+}

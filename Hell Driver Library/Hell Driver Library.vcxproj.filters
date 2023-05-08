@@ -26,6 +26,12 @@
     <Filter Include="Memory">
       <UniqueIdentifier>{0473c4e5-918c-41ca-b1a2-a49c918a3ec4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SSDT\遍历钩子">
+      <UniqueIdentifier>{9c3000f8-52d7-4cae-8bbb-adc5328265dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SSDT\提权/降权">
+      <UniqueIdentifier>{a45294bb-ec55-4027-a8e2-97695b643fc8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DriverEntry.c">
@@ -37,14 +43,17 @@
     <ClCompile Include="IRP.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SSDTHook.c">
-      <Filter>SSDT</Filter>
-    </ClCompile>
     <ClCompile Include="HUtil.c">
       <Filter>Util</Filter>
     </ClCompile>
     <ClCompile Include="Memory.c">
       <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="FetchHook.c">
+      <Filter>SSDT\遍历钩子</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessAccess.c">
+      <Filter>SSDT\提权/降权</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -54,14 +63,20 @@
     <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SSDTHook.h">
-      <Filter>SSDT</Filter>
-    </ClInclude>
     <ClInclude Include="HUtil.h">
       <Filter>Util</Filter>
     </ClInclude>
     <ClInclude Include="Memory.h">
       <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SSDT.h">
+      <Filter>SSDT</Filter>
+    </ClInclude>
+    <ClInclude Include="FetchHook.h">
+      <Filter>SSDT\遍历钩子</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessAccess.h">
+      <Filter>SSDT\提权/降权</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

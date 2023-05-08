@@ -152,16 +152,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FetchHook.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Hell.h" />
     <ClInclude Include="HellDriver.h" />
     <ClInclude Include="KeMemory.h" />
-    <ClInclude Include="ProcessProtect.h" />
+    <ClInclude Include="ProcessAccess.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FetchHook.cpp" />
     <ClCompile Include="HellDriver.cpp" />
     <ClCompile Include="KeMemory.cpp" />
-    <ClCompile Include="ProcessProtect.cpp" />
+    <ClCompile Include="ProcessAccess.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -3,7 +3,8 @@
 
 #include "Hell.h"
 #include "KeMemory.h"
-#include "ProcessProtect.h"
+#include "FetchHook.h"
+#include "ProcessAccess.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -22,13 +22,13 @@
     <Filter Include="内核内存读写">
       <UniqueIdentifier>{b79df33b-aa7b-4f53-8486-e95a82028b39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="遍历钩子">
+      <UniqueIdentifier>{d09bda31-95c1-472a-9769-b440094ce3d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProcessProtect.h">
-      <Filter>进程保护</Filter>
     </ClInclude>
     <ClInclude Include="Hell.h">
       <Filter>Header Files</Filter>
@@ -39,16 +39,25 @@
     <ClInclude Include="KeMemory.h">
       <Filter>内核内存读写</Filter>
     </ClInclude>
+    <ClInclude Include="FetchHook.h">
+      <Filter>遍历钩子</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessAccess.h">
+      <Filter>进程保护</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ProcessProtect.cpp">
-      <Filter>进程保护</Filter>
-    </ClCompile>
     <ClCompile Include="HellDriver.cpp">
       <Filter>Driver</Filter>
     </ClCompile>
     <ClCompile Include="KeMemory.cpp">
       <Filter>内核内存读写</Filter>
+    </ClCompile>
+    <ClCompile Include="FetchHook.cpp">
+      <Filter>遍历钩子</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessAccess.cpp">
+      <Filter>进程保护</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
