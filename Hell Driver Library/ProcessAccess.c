@@ -1,4 +1,5 @@
 #include "SSDT.h"
+#include "ProcessAccess.h"
 
 #define TYPE_CHECK(type, code)                               ((type->Info.AccessType & code) == code)
 #define ACCESS_ELIMINATE(access, eliminate)                  access &= ~eliminate
@@ -165,8 +166,6 @@ OB_PREOP_CALLBACK_STATUS ObProcessAccessLastHookCall(PVOID content, POB_PRE_OPER
             oper->Parameters->CreateHandleInformation.OriginalDesiredAccess = access;
             oper->Parameters->CreateHandleInformation.DesiredAccess = access;
         }
-        
-        
     }
     HELL_UN_LOCK(&g_Lock);
     return OB_PREOP_SUCCESS;

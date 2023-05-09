@@ -9,8 +9,8 @@ extern "C" {
 
     HELLCALL void ProcessAccessInstall();
     HELLCALL void ProcessAccessUninstall();
-    HELLCALL BOOLEAN ProcessAccessSetHook(UINT32 pid, UINT32 type, ACCESS_MASK access);
-    HELLCALL BOOLEAN ProcessAccessDelHook(UINT32 pid);
+    HELLCALL BOOLEAN ProcessAccessHookSet(UINT32 pid, UINT32 type, ACCESS_MASK access);
+    HELLCALL BOOLEAN ProcessAccessHookDel(UINT32 pid);
 
 #ifdef __cplusplus
 }

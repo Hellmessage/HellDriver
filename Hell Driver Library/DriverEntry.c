@@ -28,7 +28,6 @@ NTSTATUS DriverEntry(_In_ PDRIVER_OBJECT pDriver, _In_ PUNICODE_STRING path) {
 void UnloadDriver(PDRIVER_OBJECT pDriver) {
     HLog("Ð¶ÔØ¿ªÊ¼");
 
-    
     ProcessAccessHookUninstall();
     
     DeleteDevice(pDriver);

@@ -18,7 +18,7 @@ void ProcessAccessUninstall() {
     DeviceIoControl(driver, IO_CODE_PROCESS_ACCESS_HOOK_UNINSTALL, NULL, 0, NULL, 0, &outSize, (LPOVERLAPPED)NULL);
 }
 
-BOOLEAN ProcessAccessSetHook(UINT32 pid, UINT32 type, ACCESS_MASK access) {
+BOOLEAN ProcessAccessHookSet(UINT32 pid, UINT32 type, ACCESS_MASK access) {
     HANDLE driver = GetDriver();
     if (driver == NULL) {
         return FALSE;
@@ -36,7 +36,7 @@ BOOLEAN ProcessAccessSetHook(UINT32 pid, UINT32 type, ACCESS_MASK access) {
     return TRUE;
 }
 
-BOOLEAN ProcessAccessDelHook(UINT32 pid) {
+BOOLEAN ProcessAccessHookDel(UINT32 pid) {
     HANDLE driver = GetDriver();
     if (driver == NULL) {
         return FALSE;

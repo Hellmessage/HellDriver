@@ -2,6 +2,8 @@
 #define __HELL_DRIVER_HEADER__
 
 #include "Hell.h"
+#include "Struct.h"
+#include "HTools.h"
 #include "KeMemory.h"
 #include "FetchHook.h"
 #include "ProcessAccess.h"

@@ -25,7 +25,6 @@ BOOLEAN KWriteProcessMemoryMDL(PEPROCESS process, PVOID address, PVOID buffer, U
 BOOLEAN KWriteProcessOnlyReadMemoryMDL(PEPROCESS process, PVOID address, PVOID buffer, UINT32 length);
 BOOLEAN KWriteProcessOnlyReadMemoryCR0(PEPROCESS process, PVOID address, PVOID buffer, UINT32 length);
 
-
 #pragma region ¶ÁÄÚ´æ
 
 NTSTATUS KReadProcessMemoryByPid(UINT32 pid, PVOID address, PVOID buffer, UINT32 length) {
@@ -446,15 +445,6 @@ NTSTATUS WritePhysicalMemory(PVOID physical, PVOID buffer, UINT32 length) {
 
 
 #pragma endregion
-
-
-
-
-
-
-
-
-
 
 #pragma region Ð´±£»¤CR0
 

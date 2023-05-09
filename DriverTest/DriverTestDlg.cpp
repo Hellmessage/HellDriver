@@ -52,6 +52,7 @@ BEGIN_MESSAGE_MAP(CDriverTestDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON13, &CDriverTestDlg::OnBnClickedCloseButton13)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON15, &CDriverTestDlg::OnBnClickedCloseButton15)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON16, &CDriverTestDlg::OnBnClickedCloseButton16)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON17, &CDriverTestDlg::OnBnClickedCloseButton17)
 END_MESSAGE_MAP()
 
 BOOL CDriverTestDlg::OnInitDialog() {
@@ -130,35 +131,18 @@ void CDriverTestDlg::OnBnClickedReadButton() {
 
 
 void CDriverTestDlg::OnBnClickedCloseButton4() {
-	ProcessAccessSetHook(GetCurrentProcessId(), HPAT_ENHANCE, NULL);
-	//ProtectProcess(GetCurrentProcessId(), PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton5() {
-	ProcessAccessSetHook(GetCurrentProcessId(), HPAT_REDUCE, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
-	//ProtectProcess(GetCurrentProcessId(), PROCESS_TERMINATE);
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton6() {
-	//UnProtectProcess(GetCurrentProcessId());
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton7() {
-	int pid = 0;
-	CString c;
-	GetDlgItem(IDC_EDIT1)->GetWindowTextW(c);
-	pid = atoi(CT2A(c.GetBuffer()));
-	//ProtectProcess(pid, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
-	ProcessAccessSetHook(pid, HPAT_ENHANCE, NULL);
 }
 
 void CDriverTestDlg::OnBnClickedCloseButton11() {
-	int pid = 0;
-	CString c;
-	GetDlgItem(IDC_EDIT1)->GetWindowTextW(c);
-	pid = atoi(CT2A(c.GetBuffer()));
-	//ProtectProcess(pid, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
-	ProcessAccessSetHook(pid, HPAT_REDUCE, PROCESS_TERMINATE | PROCESS_VM_READ | PROCESS_VM_WRITE);
 }
 
 void CDriverTestDlg::OnBnClickedButton2() {
@@ -360,7 +344,7 @@ void CDriverTestDlg::OnBnClickedCloseButton12() {
 	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
 	pid = atoi(CT2A(tpid.GetBuffer()));
 
-	ProcessAccessSetHook(pid, HPAT_ENHANCE, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
+	ProcessAccessHookSet(pid, HPAT_ENHANCE, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
 }
 
 //Î¬³Ö
@@ -370,7 +354,7 @@ void CDriverTestDlg::OnBnClickedCloseButton14() {
 	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
 	pid = atoi(CT2A(tpid.GetBuffer()));
 
-	ProcessAccessSetHook(pid, HPAT_MAINTAIN, 0);
+	ProcessAccessHookSet(pid, HPAT_MAINTAIN, 0);
 }
 
 //½µµÍ
@@ -380,7 +364,7 @@ void CDriverTestDlg::OnBnClickedCloseButton13() {
 	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
 	pid = atoi(CT2A(tpid.GetBuffer()));
 
-	ProcessAccessSetHook(pid, HPAT_REDUCE, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
+	ProcessAccessHookSet(pid, HPAT_REDUCE, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
 }
 
 //±£»¤¶ÁÐ´¹Ø
@@ -390,7 +374,7 @@ void CDriverTestDlg::OnBnClickedCloseButton15() {
 	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
 	pid = atoi(CT2A(tpid.GetBuffer()));
 
-	ProcessAccessSetHook(pid, HPAT_PROTECT, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
+	ProcessAccessHookSet(pid, HPAT_PROTECT, PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_TERMINATE);
 }
 
 //ÒÆ³ý
@@ -400,5 +384,41 @@ void CDriverTestDlg::OnBnClickedCloseButton16() {
 	GetDlgItem(IDC_EDIT5)->GetWindowTextW(tpid);
 	pid = atoi(CT2A(tpid.GetBuffer()));
 
-	ProcessAccessDelHook(pid);
+	ProcessAccessHookDel(pid);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void HellSystemHandleEvent(UNICODE_STRING type, UNICODE_STRING name, SYSTEM_HANDLE_TABLE_ENTRY_INFO info, HANDLE handle) {
+	if (_wcsicmp(type.Buffer, L"Process") == 0) {
+		DWORD tpid = HandleToProcessId(handle);
+		DWORD cpid = info.ProcessId;
+		if (tpid == 3908 || cpid == 3908) {
+			MessageBoxA(NULL, "123123", "1", 0);
+		}
+		HLog("%wZ    %wZ    %lx    %d      %d", type, name, handle, info.ProcessId, HandleToProcessId(handle));
+	}
+}
+
+
+void CDriverTestDlg::OnBnClickedCloseButton17() {
+	EnumProcessHandle(HellSystemHandleEvent);
+	// TODO: Add your control notification handler code here
 }

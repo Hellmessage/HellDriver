@@ -13,6 +13,7 @@ PVOID GetUndocumentFunctionAddress(IN PUNICODE_STRING pFunName, IN PUCHAR pStart
 
 ULONG EnumRegisterHookCallBacks() {
     ULONG count = 0;
+    ULONG tcount = 0;
     PLIST_ENTRY curr = NULL;
     POB_CALLBACK back;
     GetVersionAndHardCode();
@@ -20,10 +21,6 @@ ULONG EnumRegisterHookCallBacks() {
     PWCHAR driverName;
     ULONG64 ObProcessCallbackListHead = *(ULONG64*)PsProcessType + ObjectCallbackListOffset;
     ULONG64 ObThreadCallbackListHead = *(ULONG64*)PsThreadType + ObjectCallbackListOffset;
-
-    HLog("NtBuildNumber: %lu    ObjectCallbackListOffset: %lu", NtBuildNumber, ObjectCallbackListOffset);
-    HLog("ObProcessCallbackListHead:  %llx", ObProcessCallbackListHead);
-    HLog("ObThreadCallbackListHead:   %llx", ObThreadCallbackListHead);
     curr = ((PLIST_ENTRY)ObProcessCallbackListHead)->Flink;
     if (curr == NULL || !MmIsAddressValid(curr)) {
         return count;
@@ -38,32 +35,30 @@ ULONG EnumRegisterHookCallBacks() {
         back = (POB_CALLBACK)curr;
         if (back->ObHandle != 0) {
             if (GetDriverNameByPoint((PVOID)back->PreCall, driverName)) {
-                HLog("已加载: 驱动名:%S   Handle: %p  %wZ", driverName, back->ObHandle, &back->ObHandle->AltitudeString);
+                HLog("进程 已加载: Handle:%p    %-10wZ    驱动名:%S", back->ObHandle, &back->ObHandle->AltitudeString, driverName);
+                count++;
             }
         }
-        count++;
         curr = curr->Flink;
     } while (curr != (PLIST_ENTRY)ObProcessCallbackListHead);
-
     curr = ((PLIST_ENTRY)ObThreadCallbackListHead)->Flink;
     if (curr == NULL || !MmIsAddressValid(curr)) {
         return count;
     }
+    HLog("----------------------------------------------------- 进程钩子: %d 个 ---------------------------------------------------", count);
     do {
         back = (POB_CALLBACK)curr;
         if (back->ObHandle != 0) {
             if (GetDriverNameByPoint((PVOID)back->PreCall, driverName)) {
-                HLog("已加载: 驱动名:%S   Handle: %p  %wZ", driverName, back->ObHandle, &back->ObHandle->AltitudeString);
+                HLog("线程 已加载: Handle:%p    %-10wZ    驱动名:%S", back->ObHandle, &back->ObHandle->AltitudeString, driverName);
+                tcount++;
             }
         }
-        count++;
         curr = curr->Flink;
     } while (curr != (PLIST_ENTRY)ObThreadCallbackListHead);
-
-    return count;
+    HLog("----------------------------------------------------- 线程钩子: %d 个 ---------------------------------------------------", tcount);
+    return count + tcount;
 }
-
-
 
 BOOLEAN GetDriverNameByPoint(PVOID pPoint, PWCHAR pDriverName) {
     if (pDriverName == NULL) {
@@ -78,7 +73,6 @@ BOOLEAN GetDriverNameByPoint(PVOID pPoint, PWCHAR pDriverName) {
     }
     head = begin->InLoadOrderLinks.Flink;
     next = head->Flink;
-    HLog("First: %p      head: %p     next: %p", begin, head, next);
     do {
         PLDR_DATA_TABLE_ENTRY entry = CONTAINING_RECORD(next, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
         next = next->Flink;
@@ -90,8 +84,6 @@ BOOLEAN GetDriverNameByPoint(PVOID pPoint, PWCHAR pDriverName) {
     } while (next != head->Flink);
     return FALSE;
 }
-
-
 
 PVOID GetPsLoadedListModules() {
     UNICODE_STRING RtlPcToFileHeader = RTL_CONSTANT_STRING(L"RtlPcToFileHeader");
