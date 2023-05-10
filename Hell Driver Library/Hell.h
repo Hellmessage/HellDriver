@@ -6,9 +6,7 @@
 #include <stdio.h>
 #include "Common.h"
 
-
 #pragma warning(disable:4201)
-
 
 NTSTATUS CreateDevice(PDRIVER_OBJECT pDriver);
 void DeleteDevice(PDRIVER_OBJECT pDriver);
@@ -101,35 +99,7 @@ typedef struct _LDR_DATA_TABLE_ENTRY {
 
 
 
-#ifdef _WIN64
-typedef struct _LDR_DATA {
-	LIST_ENTRY			ListEntry;
-	ULONG64				__Undefined1;
-	ULONG64				__Undefined2;
-	ULONG64				__Undefined3;
-	ULONG64				NonPagedDebugInfo;
-	ULONG64				DllBase;
-	ULONG64				EntryPoint;
-	ULONG				SizeOfImage;
-	UNICODE_STRING		Path;
-	UNICODE_STRING		Name;
-	ULONG				Flags;
-}LDR_DATA, * PLDR_DATA;
-#else
-typedef struct _LDR_DATA {
-	LIST_ENTRY			ListEntry;
-	ULONG				unknown1;
-	ULONG				unknown2;
-	ULONG				unknown3;
-	ULONG				unknown4;
-	ULONG				unknown5;
-	ULONG				unknown6;
-	ULONG				unknown7;
-	UNICODE_STRING		Path;
-	UNICODE_STRING		Name;
-	ULONG				Flags;
-}LDR_DATA, * PLDR_DATA;
-#endif
+
 
 #pragma endregion
 

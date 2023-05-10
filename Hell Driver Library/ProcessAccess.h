@@ -6,9 +6,8 @@
 NTSTATUS ProcessAccessHookInstall();
 NTSTATUS ProcessAccessHookUninstall();
 
-
-void ProcessAccessSetHook(PHELL_PROCESS_ACCESS_OPT opt);
-void ProcessAccessDelHook(PHELL_PROCESS_ACCESS_OPT opt);
+BOOLEAN ProcessAccessSetHook(PHELL_PROCESS_ACCESS_OPT opt);
+BOOLEAN ProcessAccessDelHook(PHELL_PROCESS_ACCESS_OPT opt);
 void ProcessAccessClear();
 
 #endif // !__HELL_PROCESS_ACCESS_HEADER__

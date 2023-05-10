@@ -62,4 +62,5 @@ public:
 	afx_msg void OnBnClickedCloseButton15();
 	afx_msg void OnBnClickedCloseButton16();
 	afx_msg void OnBnClickedCloseButton17();
+	afx_msg void OnBnClickedCloseButton18();
 };

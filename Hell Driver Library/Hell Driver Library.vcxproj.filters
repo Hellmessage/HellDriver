@@ -32,6 +32,12 @@
     <Filter Include="SSDT\提权/降权">
       <UniqueIdentifier>{a45294bb-ec55-4027-a8e2-97695b643fc8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SSDT\进程">
+      <UniqueIdentifier>{d2a08490-f5dc-4258-85f5-d665c3c67f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="未导出">
+      <UniqueIdentifier>{93a02a32-6606-44d9-b909-04c3de9d6d9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DriverEntry.c">
@@ -55,6 +61,9 @@
     <ClCompile Include="ProcessAccess.c">
       <Filter>SSDT\提权/降权</Filter>
     </ClCompile>
+    <ClCompile Include="Process.c">
+      <Filter>SSDT\进程</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Hell.h">
@@ -77,6 +86,12 @@
     </ClInclude>
     <ClInclude Include="ProcessAccess.h">
       <Filter>SSDT\提权/降权</Filter>
+    </ClInclude>
+    <ClInclude Include="Process.h">
+      <Filter>SSDT\进程</Filter>
+    </ClInclude>
+    <ClInclude Include="Struce.h">
+      <Filter>未导出</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

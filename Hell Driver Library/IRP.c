@@ -2,6 +2,9 @@
 #include "Memory.h"
 #include "SSDT.h"
 
+void TestHandle(PIRP pirp, PIO_STACK_LOCATION stack);
+
+
 void ProcessAccessSetHookEx(PIRP pirp, PIO_STACK_LOCATION stack);
 void ProcessAccessDelHookEx(PIRP pirp, PIO_STACK_LOCATION stack);
 
@@ -71,6 +74,9 @@ NTSTATUS IRPIoControl(PDEVICE_OBJECT pDevice, PIRP pirp) {
         case IO_CODE_FETCH_HOOK:
             EnumRegisterHookCallBacks();
             break;
+        case IO_CODE_PROCESS_GET_OBJECT_HANDLE:
+            TestHandle(pirp, stack);
+            break;
 
         case IO_CODE_KE_MEMORY_READ:
             pirp->IoStatus.Information = KEProcessMemoryRead(pirp, stack);
@@ -102,6 +108,46 @@ NTSTATUS IRPIoControl(PDEVICE_OBJECT pDevice, PIRP pirp) {
     HLog("离开 IRPIoControl");
     return STATUS_SUCCESS;
 }
+
+
+
+
+void TestHandle(PIRP pirp, PIO_STACK_LOCATION stack) {
+    HELL_PARAMS(pirp);
+    HELL_PARAMS(stack);
+    HANDLE handle = (HANDLE)(*(ULONG64*)pirp->AssociatedIrp.SystemBuffer);
+    OBJECT_HANDLE_INFORMATION obj = { 0 };
+    ProcessGetObjectByHandle(handle, &obj);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #pragma region 内存保护相关
 

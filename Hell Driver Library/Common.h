@@ -25,6 +25,7 @@
 #define IO_CODE_PROCESS_ACCESS_HOOK_SET                     HCODE(0x902)
 #define IO_CODE_PROCESS_ACCESS_HOOK_DEL                     HCODE(0x903)
 
+#define IO_CODE_PROCESS_GET_OBJECT_HANDLE                   HCODE(0x950)
 #pragma endregion
 
 #pragma region 过进程保护读写
@@ -57,7 +58,6 @@ typedef struct _ke_process_memory_opt {
 #define HPAT_REDUCE                        0x2
 #define HPAT_PROTECT                       0x4
 #define HPAT_MAINTAIN                      0x8
-
 typedef struct _HELL_PROCESS_ACCESS_OPT {
     UINT32          ProcessId;
     UINT32          AccessType;

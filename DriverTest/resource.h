@@ -36,6 +36,7 @@
 #define IDC_CLOSE_BUTTON15              1029
 #define IDC_CLOSE_BUTTON16              1030
 #define IDC_CLOSE_BUTTON17              1031
+#define IDC_CLOSE_BUTTON18              1032
 
 // Next default values for new objects
 // 

@@ -199,7 +199,7 @@ void ProcessAccessClear() {
     }
 }
 
-void ProcessAccessSetHook(PHELL_PROCESS_ACCESS_OPT opt) {
+BOOLEAN ProcessAccessSetHook(PHELL_PROCESS_ACCESS_OPT opt) {
     if (g_Installed) {
         HELL_IN_LOCK(&g_Lock);
         PLIST_ENTRY entry;
@@ -215,7 +215,7 @@ void ProcessAccessSetHook(PHELL_PROCESS_ACCESS_OPT opt) {
             manage = (PHELL_PROCESS_ACCESS_MANAGE)ExAllocatePool2(POOL_FLAG_NON_PAGED, sizeof(HELL_PROCESS_ACCESS_MANAGE), g_Tag);
             if (manage == NULL) {
                 HELL_UN_LOCK(&g_Lock);
-                return;
+                return FALSE;
             }
             RtlZeroMemory(manage, sizeof(HELL_PROCESS_ACCESS_MANAGE));
             manage->BackupAccess = 0;
@@ -227,10 +227,12 @@ void ProcessAccessSetHook(PHELL_PROCESS_ACCESS_OPT opt) {
         HLog("--------------设置进程<%d>监听成功", manage->Info.ProcessId);
         HELL_UN_LOCK(&g_Lock);
         EnumRegisterHookCallBacks();
+        return TRUE;
     }
+    return FALSE;
 }
 
-void ProcessAccessDelHook(PHELL_PROCESS_ACCESS_OPT opt) {
+BOOLEAN ProcessAccessDelHook(PHELL_PROCESS_ACCESS_OPT opt) {
     if (g_Installed) {
         HELL_IN_LOCK(&g_Lock);
         PLIST_ENTRY entry;
@@ -243,5 +245,7 @@ void ProcessAccessDelHook(PHELL_PROCESS_ACCESS_OPT opt) {
             }
         }
         HELL_UN_LOCK(&g_Lock);
+        return TRUE;
     }
+    return FALSE;
 }

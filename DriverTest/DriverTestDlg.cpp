@@ -53,6 +53,7 @@ BEGIN_MESSAGE_MAP(CDriverTestDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON15, &CDriverTestDlg::OnBnClickedCloseButton15)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON16, &CDriverTestDlg::OnBnClickedCloseButton16)
 	ON_BN_CLICKED(IDC_CLOSE_BUTTON17, &CDriverTestDlg::OnBnClickedCloseButton17)
+	ON_BN_CLICKED(IDC_CLOSE_BUTTON18, &CDriverTestDlg::OnBnClickedCloseButton18)
 END_MESSAGE_MAP()
 
 BOOL CDriverTestDlg::OnInitDialog() {
@@ -387,25 +388,6 @@ void CDriverTestDlg::OnBnClickedCloseButton16() {
 	ProcessAccessHookDel(pid);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void HellSystemHandleEvent(UNICODE_STRING type, UNICODE_STRING name, SYSTEM_HANDLE_TABLE_ENTRY_INFO info, HANDLE handle) {
 	if (_wcsicmp(type.Buffer, L"Process") == 0) {
 		DWORD tpid = HandleToProcessId(handle);
@@ -417,8 +399,19 @@ void HellSystemHandleEvent(UNICODE_STRING type, UNICODE_STRING name, SYSTEM_HAND
 	}
 }
 
-
 void CDriverTestDlg::OnBnClickedCloseButton17() {
 	EnumProcessHandle(HellSystemHandleEvent);
 	// TODO: Add your control notification handler code here
+}
+
+void CDriverTestDlg::OnBnClickedCloseButton18() {
+	HANDLE driver = GetDriver();
+	if (driver == NULL) {
+		return;
+	}
+
+	HANDLE ts = OpenProcess(PROCESS_ALL_ACCESS, false, GetCurrentProcessId());
+	ULONG64 h = (ULONG64)ts;
+	DWORD outSize = 0;
+	DeviceIoControl(driver, IO_CODE_PROCESS_GET_OBJECT_HANDLE, &h, sizeof(ULONG64), NULL, 0, &outSize, (LPOVERLAPPED)NULL);
 }

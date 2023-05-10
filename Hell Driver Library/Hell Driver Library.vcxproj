@@ -79,12 +79,13 @@
     <DriverTargetPlatform>Universal</DriverTargetPlatform>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
-    <TargetVersion>Windows10</TargetVersion>
+    <TargetVersion>
+    </TargetVersion>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>WindowsKernelModeDriver10.0</PlatformToolset>
     <ConfigurationType>Driver</ConfigurationType>
     <DriverType>KMDF</DriverType>
-    <DriverTargetPlatform>Universal</DriverTargetPlatform>
+    <DriverTargetPlatform>Desktop</DriverTargetPlatform>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <TargetVersion>Windows10</TargetVersion>
@@ -159,6 +160,7 @@
     <ClCompile Include="HUtil.c" />
     <ClCompile Include="IRP.c" />
     <ClCompile Include="Memory.c" />
+    <ClCompile Include="Process.c" />
     <ClCompile Include="ProcessAccess.c" />
   </ItemGroup>
   <ItemGroup>
@@ -167,8 +169,10 @@
     <ClInclude Include="Hell.h" />
     <ClInclude Include="HUtil.h" />
     <ClInclude Include="Memory.h" />
+    <ClInclude Include="Process.h" />
     <ClInclude Include="ProcessAccess.h" />
     <ClInclude Include="SSDT.h" />
+    <ClInclude Include="Struce.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
